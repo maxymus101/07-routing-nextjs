@@ -9,20 +9,19 @@ import {
 import toast, { Toaster } from "react-hot-toast";
 import { useDebounce } from "use-debounce";
 
-import Pagination from "../../components/Pagination/Pagination";
-import css from "./NotesPage.module.css"; // Шлях до стилів App.module.css
+import css from "./NotesPage.module.css";
 
-import { fetchNotes, PaginatedNotesResponse } from "../../lib/api";
-import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
-import { Note } from "../../types/note";
-import NoteList from "../../components/NoteList/NoteList";
-import SearchBox from "../../components/SearchBox/SearchBox";
-import NoteModal from "../../components/NoteModal/NoteModal";
-import Loading from "../loading";
-
+import { fetchNotes, PaginatedNotesResponse } from "../../../../lib/api";
+import ErrorMessage from "../../../../components/ErrorMessage/ErrorMessage";
+import { Note } from "../../../../types/note";
+import Pagination from "../../../../components/Pagination/Pagination";
+import NoteList from "../../../../components/NoteList/NoteList";
+import SearchBox from "../../../../components/SearchBox/SearchBox";
+import NoteModal from "../../../../components/NoteModal/NoteModal";
+import Loading from "../../../loading";
 
 interface NotesClientProps {
-  initialNotes: PaginatedNotesResponse; 
+  initialNotes: PaginatedNotesResponse;
 }
 
 export default function NotesClient({ initialNotes }: NotesClientProps) {
@@ -32,24 +31,24 @@ export default function NotesClient({ initialNotes }: NotesClientProps) {
   const [debouncedSearchQuery] = useDebounce(currentSearchQuery, 500);
 
   const [currentPage, setCurrentPage] = useState(initialNotes.page || 1); // Використовуємо початкову сторінку з SSR даних
-  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false); 
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // === useQuery для отримання нотаток ===
   const {
-    data, 
+    data,
     error: queryError,
     isLoading,
     isError,
     isSuccess,
     isFetching,
   } = useQuery<PaginatedNotesResponse, Error>({
-    queryKey: ["notes", currentPage, debouncedSearchQuery], 
-    queryFn: () => fetchNotes(currentPage, 12, debouncedSearchQuery), 
-    enabled: true, 
+    queryKey: ["notes", currentPage, debouncedSearchQuery],
+    queryFn: () => fetchNotes(currentPage, 12, debouncedSearchQuery),
+    enabled: true,
     placeholderData: keepPreviousData,
-    initialData: initialNotes, 
+    initialData: initialNotes,
   });
 
   const notifyNoNotesFound = () =>
@@ -68,21 +67,27 @@ export default function NotesClient({ initialNotes }: NotesClientProps) {
     if (isSuccess && debouncedSearchQuery && (data?.notes || []).length === 0) {
       notifyNoNotesFound();
     }
-  }, [isSuccess, data, debouncedSearchQuery, isError, queryError, errorMessage]);
-
+  }, [
+    isSuccess,
+    data,
+    debouncedSearchQuery,
+    isError,
+    queryError,
+    errorMessage,
+  ]);
 
   // Обробник пошуку:
   const handleSearchTermChange = (newQuery: string) => {
     setCurrentSearchQuery(newQuery);
-    setCurrentPage(1); 
-    setErrorMessage(null); 
+    setCurrentPage(1);
+    setErrorMessage(null);
   };
 
   // Обробник зміни сторінки для Pagination компонента
   const handlePageClick = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setErrorMessage(null); 
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setErrorMessage(null);
   };
 
   // Функції для відкриття та закриття модального вікна створення нотатки.
@@ -91,7 +96,7 @@ export default function NotesClient({ initialNotes }: NotesClientProps) {
 
   // Функція для закриття повідомлення про помилку
   const handleCloseErrorMessage = () => {
-    setErrorMessage(null); 
+    setErrorMessage(null);
     queryClient.invalidateQueries({ queryKey: ["notes"] });
   };
 
@@ -102,40 +107,53 @@ export default function NotesClient({ initialNotes }: NotesClientProps) {
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox onSearch={handleSearchTermChange} /> 
-        
-        {notesToDisplay.length > 0 && totalPagesToDisplay > 1 && (<Pagination
-          totalPages={totalPagesToDisplay}
-          currentPage={currentPage}
-          onPageChange={handlePageClick}
-        />)}
+        <SearchBox onSearch={handleSearchTermChange} />
+
+        {notesToDisplay.length > 0 && totalPagesToDisplay > 1 && (
+          <Pagination
+            totalPages={totalPagesToDisplay}
+            currentPage={currentPage}
+            onPageChange={handlePageClick}
+          />
+        )}
 
         <button className={css.button} onClick={openCreateNoteModal}>
           Create note +
         </button>
       </header>
 
-          {(isLoading || isFetching) && <Loading/>}
-      
-      {errorMessage && <ErrorMessage message={errorMessage} onClose={handleCloseErrorMessage} />}
+      {(isLoading || isFetching) && <Loading />}
 
-      {notesToDisplay.length > 0 && (
-        <NoteList notes={notesToDisplay} /> 
-      )}
-      {!isLoading && !isFetching && !isError && notesToDisplay.length === 0 && !debouncedSearchQuery && (
-        <p className={css.initialMessage}>Start by searching for notes or create a new one!</p>
-      )}
-      {!isLoading && !isFetching && !isError && notesToDisplay.length === 0 && debouncedSearchQuery && (
-        <p className={css.noResultsMessage}>No notes found for &quot;{debouncedSearchQuery}&quot;.</p>
-      )}
-
-      <Toaster /> 
-
-      {isNoteModalOpen && (
-        <NoteModal 
-          onClose={closeCreateNoteModal} 
+      {errorMessage && (
+        <ErrorMessage
+          message={errorMessage}
+          onClose={handleCloseErrorMessage}
         />
       )}
+
+      {notesToDisplay.length > 0 && <NoteList notes={notesToDisplay} />}
+      {!isLoading &&
+        !isFetching &&
+        !isError &&
+        notesToDisplay.length === 0 &&
+        !debouncedSearchQuery && (
+          <p className={css.initialMessage}>
+            Start by searching for notes or create a new one!
+          </p>
+        )}
+      {!isLoading &&
+        !isFetching &&
+        !isError &&
+        notesToDisplay.length === 0 &&
+        debouncedSearchQuery && (
+          <p className={css.noResultsMessage}>
+            No notes found for &quot;{debouncedSearchQuery}&quot;.
+          </p>
+        )}
+
+      <Toaster />
+
+      {isNoteModalOpen && <NoteModal onClose={closeCreateNoteModal} />}
     </div>
   );
 }
