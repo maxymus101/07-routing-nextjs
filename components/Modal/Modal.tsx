@@ -1,13 +1,13 @@
 import { useEffect, type MouseEvent } from "react";
 import ReactDOM from "react-dom";
-import css from "./NoteModal.module.css";
-import NoteForm from "../NoteForm/NoteForm";
+import css from "./Modal.module.css";
 
 interface NoteModalProps {
+  children: React.ReactNode;
   onClose: () => void;
 }
 
-export default function NoteModal({ onClose }: NoteModalProps) {
+export default function Modal({ onClose, children }: NoteModalProps) {
   // useEffect для керування прокруткою сторінки.
   // Він спрацьовує при монтуванні компонента (тобто, коли модалка відкривається)
   // та очищається при розмонтуванні (коли модалка закривається).
@@ -47,9 +47,7 @@ export default function NoteModal({ onClose }: NoteModalProps) {
       aria-modal="true"
       onClick={handleBackdropClick}
     >
-      <div className={css.modal}>
-        <NoteForm onCancel={onClose} onModalClose={onClose} />
-      </div>
+      <div className={css.modal}>{children}</div>
     </div>,
     document.body
   );

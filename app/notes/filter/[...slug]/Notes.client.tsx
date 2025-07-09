@@ -17,7 +17,7 @@ import { Note } from "../../../../types/note";
 import Pagination from "../../../../components/Pagination/Pagination";
 import NoteList from "../../../../components/NoteList/NoteList";
 import SearchBox from "../../../../components/SearchBox/SearchBox";
-import NoteModal from "../../../../components/NoteModal/NoteModal";
+import Modal from "../../../../components/Modal/Modal";
 import Loading from "../../../loading";
 
 interface NotesClientProps {
@@ -154,7 +154,7 @@ export default function NotesClient({ initialNotes, tag }: NotesClientProps) {
 
       <Toaster />
 
-      {isNoteModalOpen && <NoteModal onClose={closeCreateNoteModal} />}
+      {isNoteModalOpen && <Modal onClose={closeCreateNoteModal} />}
     </div>
   );
 }

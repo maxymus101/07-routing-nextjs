@@ -32,15 +32,6 @@ export type Category = {
   updatedAt: string;
 };
 
-// const tags: NoteTag[] = ["Todo", "Work", "Personal", "Meeting", "Shopping"];
-
-// отримання категорії(тегу)
-export const getCategories = async () => {
-  const categoryRes = await axios<Category[]>("/categories");
-  console.log(categoryRes);
-  return categoryRes.data;
-};
-
 const BASE_URL = "https://notehub-public.goit.study/api";
 
 const TOKEN = process.env.NEXT_PUBLIC_NOTEHUB_T;
