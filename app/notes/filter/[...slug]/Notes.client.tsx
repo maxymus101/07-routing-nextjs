@@ -22,9 +22,10 @@ import Loading from "../../../loading";
 
 interface NotesClientProps {
   initialNotes: PaginatedNotesResponse;
+  tag?: string;
 }
 
-export default function NotesClient({ initialNotes }: NotesClientProps) {
+export default function NotesClient({ initialNotes, tag }: NotesClientProps) {
   const queryClient = useQueryClient(); // useQueryClient тепер викликається в правильному контексті
 
   const [currentSearchQuery, setCurrentSearchQuery] = useState("");
@@ -44,8 +45,8 @@ export default function NotesClient({ initialNotes }: NotesClientProps) {
     isSuccess,
     isFetching,
   } = useQuery<PaginatedNotesResponse, Error>({
-    queryKey: ["notes", currentPage, debouncedSearchQuery],
-    queryFn: () => fetchNotes(currentPage, 12, debouncedSearchQuery),
+    queryKey: ["notes", currentPage, debouncedSearchQuery, tag],
+    queryFn: () => fetchNotes(currentPage, 12, debouncedSearchQuery, tag),
     enabled: true,
     placeholderData: keepPreviousData,
     initialData: initialNotes,

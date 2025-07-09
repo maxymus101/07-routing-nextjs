@@ -12,6 +12,7 @@ export interface PaginatedNotesResponse {
   page: number;
   totalPages: number;
   totalResults: number;
+  tag?: string;
 }
 
 export interface DeletedNoteInfo {
@@ -19,10 +20,26 @@ export interface DeletedNoteInfo {
   title: string;
   content: string;
   createdAt: string;
-  updatedAt: string
+  updatedAt: string;
   tag: NoteTag;
-
 }
+
+export type Category = {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+// const tags: NoteTag[] = ["Todo", "Work", "Personal", "Meeting", "Shopping"];
+
+// отримання категорії(тегу)
+export const getCategories = async () => {
+  const categoryRes = await axios<Category[]>("/categories");
+  console.log(categoryRes);
+  return categoryRes.data;
+};
 
 const BASE_URL = "https://notehub-public.goit.study/api";
 
@@ -39,14 +56,16 @@ const axiosConfig = axios.create({
 export const fetchNotes = async (
   page: number = 1,
   perPage: number = 12,
-  search: string = ""
+  search: string = "",
+  tag?: string
 ): Promise<PaginatedNotesResponse> => {
   try {
     const response = await axiosConfig.get<PaginatedNotesResponse>("/notes", {
       params: {
         page,
-        ...(search !== "" && { search: search }),
         perPage,
+        ...(search !== "" && { search: search }),
+        ...(tag ? { tag } : {}),
       },
     });
 
@@ -65,9 +84,8 @@ export const fetchNotes = async (
   }
 };
 
-export const fetchNoteById = async (id: number): Promise<Note> =>  {
+export const fetchNoteById = async (id: number): Promise<Note> => {
   const res = await axiosConfig.get<Note>(`/notes/${id}`);
-  console.log(res);
   return res.data;
 };
 
