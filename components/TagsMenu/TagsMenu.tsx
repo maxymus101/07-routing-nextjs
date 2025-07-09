@@ -4,15 +4,7 @@ import css from "./TagsMenu.module.css";
 import Link from "next/link";
 
 import { useState } from "react";
-
-export const tags: string[] = [
-  "All",
-  "Todo",
-  "Work",
-  "Personal",
-  "Meeting",
-  "Shopping",
-];
+import { tags } from "../../lib/constants/constants";
 
 export default function TagsMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,7 +17,7 @@ export default function TagsMenu() {
       </button>
       {isOpen && (
         <ul className={css.menuList}>
-          {tags.map((tag) => (
+          {["All", ...tags].map((tag) => (
             <li key={tag} className={css.menuItem}>
               <Link
                 href={`/notes/filter/${tag}`}
