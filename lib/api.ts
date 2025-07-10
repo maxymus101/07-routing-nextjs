@@ -24,14 +24,6 @@ export interface DeletedNoteInfo {
   tag: NoteTag;
 }
 
-export type Category = {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
 const BASE_URL = "https://notehub-public.goit.study/api";
 
 const TOKEN = process.env.NEXT_PUBLIC_NOTEHUB_T;
