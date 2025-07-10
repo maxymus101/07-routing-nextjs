@@ -14,7 +14,7 @@ export default async function Preview({ params }: PreviewProps) {
   const { id } = await params;
 
   const queryClient = new QueryClient();
-  queryClient.prefetchQuery({
+  await queryClient.prefetchQuery({
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(Number(id)),
   });
